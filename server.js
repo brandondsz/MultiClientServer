@@ -11,6 +11,8 @@ var options = {
   key: fs.readFileSync('server.key'),
   cert: fs.readFileSync('server.crt')
 };
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -21,6 +23,8 @@ app.use(function (req, res, next) {
 
 
 https.createServer(options, app).listen(3000, function () {
+
+  console.log('Listening on port 3000...');
 
   //Log CPU and Memory usage every 5 secods
   (function () {
@@ -47,9 +51,6 @@ var url = 'mongodb://127.0.0.1:27017/transport_db';
 var db;
 MongoClient.connect(url, function (err, database) {
   if (err) console.log('Unable to connect to the mongoDB server. Error:', err);
-
-  app.use(bodyParser.json()); // support json encoded bodies
-  app.use(bodyParser.urlencoded({ extended: true }));
 
   db = database;
 });
@@ -229,6 +230,7 @@ app.post('/addData', function (req, res) {
       if (err) {
         res.send({ 'error': 'An error has occurred' });
       } else {
+        console.log(result);
         res.send(result);
       }
     });
