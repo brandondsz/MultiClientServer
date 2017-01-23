@@ -26,22 +26,6 @@ https.createServer(options, app).listen(3000, function () {
 
   console.log('Listening on port 3000...');
 
-  //Log CPU and Memory usage every 5 secods
-  (function () {
-    var c = 0;
-    var timeout = setInterval(function () {
-      os.cpuUsage(function (v) {
-        logCpuAndMemoryUsage(v, 1 - os.freememPercentage())
-      });
-
-      c++;
-      //Don't run out of space 
-      if (c > 1000000000) {
-        clearInterval(timeout);
-      }
-    }, 5000);
-  })();
-
 });
 
 
@@ -53,6 +37,19 @@ MongoClient.connect(url, function (err, database) {
   if (err) console.log('Unable to connect to the mongoDB server. Error:', err);
 
   db = database;
+
+  //Log CPU and Memory usage every 5 seconds
+  var c = 0;
+  var timeout = setInterval(function () {
+    os.cpuUsage(function (v) {
+      logCpuAndMemoryUsage(v, 1 - os.freememPercentage())
+    });
+    c++;
+    //Don't run out of space 
+    if (c > 1000000000) {
+      clearInterval(timeout);
+    }
+  }, 5000);
 });
 
 function logCpuAndMemoryUsage(cpu, memory) {
